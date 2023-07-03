@@ -219,6 +219,30 @@ Configuration files should be stored in a version control system before being ap
 
 Autoscaling in Kubernetes is handled by two components: the Horizontal Pod Autoscaler (HPA) and the Cluster Autoscaler (CA). HPA scales the number of pod replicas in a ReplicationController, Deployment, or ReplicaSet based on observed CPU utilization or other application-provided metrics. CA, on the other hand, scales your cluster size based on the demand of your workloads.
 
+
+Horizontal Pod Autoscaler (HPA)
+
+The Horizontal Pod Autoscaler automatically scales the number of pods in a replication controller, deployment, or replica set based on observed CPU utilization.
+
+Before you create an HPA, make sure that the metric server is running in your cluster. If not, install it using the following command:
+bash
+Copy code
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+Once the metric server is running, you can create an HPA. Here's an example of how to create an HPA for a deployment named my-app:
+bash
+Copy code
+kubectl autoscale deployment my-app --cpu-percent=50 --min=1 --max=10
+This command creates an autoscaler that targets 50% CPU utilization for the pods in the my-app deployment, with a minimum of 1 pod and a maximum of 10 pods.
+
+Cluster Autoscaler (CA)
+
+The Cluster Autoscaler adjusts the size of the Kubernetes cluster (the number of nodes) based on the current needs, which means it automatically resizes the cluster when there are pods that failed to run in the cluster due to insufficient resources.
+
+To use the CA, you need to install it in your cluster. The instructions depend on your cloud provider. Here are the instructions for GCP, AWS, and Azure.
+Once the CA is installed, it should automatically adjust the size of your cluster based on the demands of your workloads.
+
+
+
 ## 10. Use Network Policies and a Firewall
 
 Network policies and firewalls control the traffic that is allowed to reach your pods and what traffic your pods are allowed to send. By default, all traffic is allowed between pods. However, you can restrict traffic between pods in the same namespace or between pods in different namespaces.
