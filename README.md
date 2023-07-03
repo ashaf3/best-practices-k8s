@@ -140,6 +140,8 @@ roleRef:
 
 This RoleBinding binds the `read-only` Role to the user `test-user` in the `default` namespace.
 
+For EKS you need to update aws-auth.yml, add IAM user then apply aws-auth.yml to rolebinding.
+
 ## 5. Monitor Your Cluster's Resources usage and Audit Policy Logs
 
 Monitoring your cluster's resources and auditing policy logs are important for understanding your application's performance and security. For monitoring, you can use tools like Prometheus. For auditing, you can use audit logs provided by Kubernetes itself.
