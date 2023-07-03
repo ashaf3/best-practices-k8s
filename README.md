@@ -86,8 +86,6 @@ spec:
      - name: my-test-app  # Container name
         image: nginx:1.14.2  # Image to be used for the container
         readinessProbe: 
-
-```yaml
           httpGet:  # Type of readiness probe
             path: /ready  # Path in the application to check
             port: 80  # Port on which the application is listening
