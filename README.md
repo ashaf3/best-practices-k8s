@@ -275,3 +275,67 @@ A similar policy would be applied for `ola-db` to allow traffic only from `ola-a
 In addition to these Kubernetes-based network policies, you should also use a firewall to protect your cluster at the infrastructure level. This could be a cloud-provider firewall or a third-party firewall appliance, depending on where your cluster is hosted. The firewall should restrict access to your cluster's control plane and nodes, allowing only necessary traffic.
 
 Keeping your firewall rules and network policies up to date is an important part of maintaining the security of your cluster. Regular reviews and audits of these rules are recommended.
+
+## 11. etcd encryption
+
+In Kubernetes, the `etcd` database stores all cluster data. It is crucial to secure `etcd` because its compromise can lead to a total cluster compromise. One of the recommended ways to secure `etcd` is by encrypting `etcd` data at rest. 
+
+You can configure Kubernetes to encrypt secret data at rest (stored in `etcd`) by providing an EncryptionConfiguration object in a file and referencing that file in the kube-apiserver's `--encryption-provider-config` flag. 
+
+The EncryptionConfiguration object is defined in the following structure:
+
+```yaml
+apiVersion: apiserver.config.k8s.io/v1
+kind: EncryptionConfiguration
+resources:
+  - resources:
+    - secrets
+    providers:
+    - aescbc:
+        keys:
+        - name: key1
+          secret: <BASE 64 ENCODED SECRET>
+    - identity: {}
+```
+
+Here is a step-by-step guide:
+
+1. Generate a 32 byte random key and base64 encode it. If you're on Linux or macOS, you can use the following command:
+
+   ```bash
+   head -c 32 /dev/urandom | base64
+   ```
+
+2. Create a new encryption config file `encryption-config.yaml` and replace `<BASE 64 ENCODED SECRET>` with the base64 value you generated:
+
+   ```yaml
+   apiVersion: apiserver.config.k8s.io/v1
+   kind: EncryptionConfiguration
+   resources:
+     - resources:
+       - secrets
+       providers:
+       - aescbc:
+           keys:
+           - name: key1
+             secret: <BASE 64 ENCODED SECRET>
+       - identity: {}
+   ```
+
+3. Place the `encryption-config.yaml` file on the Kubernetes master node.
+
+4. Set the `--encryption-provider-config` flag in the `kube-apiserver.yaml` manifest file (typically located in `/etc/kubernetes/manifests`) to the path of the encryption config file:
+
+   ```yaml
+   spec:
+     containers:
+     - command:
+       - kube-apiserver
+       - --encryption-provider-config=/etc/kubernetes/encryption-config.yaml
+   ```
+
+5. Restart the kube-apiserver.
+
+After you've completed these steps, the kube-apiserver encrypts secrets at rest in `etcd` using the specified encryption provider.
+
+Please note that you need to ensure the `encryption-config.yaml` file is appropriately protected, as it contains the encryption key for your secrets.
