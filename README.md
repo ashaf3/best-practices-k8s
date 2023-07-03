@@ -338,4 +338,4 @@ Here is a step-by-step guide:
 
 After you've completed these steps, the kube-apiserver encrypts secrets at rest in `etcd` using the specified encryption provider.
 
-Please note that you need to ensure the `encryption-config.yaml` file is appropriately protected, as it contains the encryption key for your secrets.
+Please note that you need to ensure the `encryption-config.yaml` file is appropriately protected, as it contains the encryption key for your secrets. You can also save the encryption key on HarshiCorp vault, AWS/google secret manager
