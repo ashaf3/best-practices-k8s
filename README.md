@@ -1,4 +1,4 @@
-# best-practices-k8s
+# Best-practices-k8s
 
 # Kubernetes Best Practices
 
